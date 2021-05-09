@@ -4,16 +4,19 @@ summary: Hello World Electron app
 description: |
   Simple Hello World Electron app as an example
 base: core20
+grade: stable
 confinement: strict
-grade: devel
+
+environment:
+  XWAYLAND_FULLSCREEN_WINDOW_HINT: window_role="browser-window"
 
 parts:
   electron-helloworld:
     plugin: dump
     source: ./SnapTest/bin/Desktop/
-    after: [desktop-gtk3]
+    after: [desktop-gtk3, xwayland-kiosk-helper]
     organize:
-      'linux-unpacked/*' : bin/electron/
+      'linux-unpacked/*' : bin/app/
     stage-packages:
       - libasound2
       - libgconf-2-4
@@ -63,9 +66,15 @@ parts:
       - fcitx-frontend-gtk3
       - libcanberra-gtk3-module
 
+  xwayland-kiosk-helper:
+    plugin: cmake
+    source: https://github.com/MirServer/xwayland-kiosk-helper.git
+    build-packages: [ build-essential ]
+    stage-packages: [ xwayland, i3, libegl1-mesa, libgl1-mesa-glx ]
+
 apps:
   electron-snap-test:
-    command: bin/desktop-launch $SNAP/bin/electron/snap-test --no-sandbox
+    command: bin/desktop-launch $SNAP/usr/local/bin/xwayland-kiosk-launch $SNAP/bin/app/snap-test --no-sandbox
     plugs:
       - browser-support
       - desktop
@@ -75,6 +84,7 @@ apps:
       - mount-observe
       - network
       - network-bind
-      - unity7
-      - x11
+      - opengl
+      - pulseaudio
+      - wayland
 
