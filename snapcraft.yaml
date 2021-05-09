@@ -88,3 +88,19 @@ apps:
       - pulseaudio
       - wayland
 
+  daemon:
+    daemon: simple
+    restart-condition: always
+    command: bin/desktop-launch $SNAP/usr/local/bin/xwayland-kiosk-launch $SNAP/bin/app/snap-test --no-sandbox
+    plugs:
+      - browser-support
+      - desktop
+      - desktop-legacy
+      - gsettings
+      - home
+      - mount-observe
+      - network
+      - network-bind
+      - opengl
+      - pulseaudio
+      - wayland
