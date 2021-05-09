@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ElectronNET.API;
 
 namespace SnapTest
 {
@@ -51,6 +52,9 @@ namespace SnapTest
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
+
+            // Open the Electron-Window here
+            Task.Run(async () => await Electron.WindowManager.CreateWindowAsync());
         }
     }
 }

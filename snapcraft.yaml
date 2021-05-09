@@ -1,0 +1,80 @@
+name: electron-snap-test
+version: '0.1'
+summary: Hello World Electron app
+description: |
+  Simple Hello World Electron app as an example
+base: core20
+confinement: strict
+grade: devel
+
+parts:
+  electron-helloworld:
+    plugin: dump
+    source: ./SnapTest/bin/Desktop/
+    after: [desktop-gtk3]
+    organize:
+      'linux-unpacked/*' : bin/electron/
+    stage-packages:
+      - libasound2
+      - libgconf-2-4
+      - libnss3
+      - libxss1
+      - libxtst6
+      - libdrm2
+      - libgbm1
+      - libwayland-server0
+      - libx11-xcb1
+      - libc6
+      - libgcc1
+      - libgssapi-krb5-2
+      - libstdc++6
+      - zlib1g
+      - libssl1.1
+      - libicu66
+
+
+  # Adapted from snapcraft-desktop-helpers https://github.com/ubuntu/snapcraft-desktop-helpers/blob/master/snapcraft.yaml#L183
+  desktop-gtk3:
+    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    source-subdir: gtk
+    plugin: make
+    make-parameters: ["FLAVOR=gtk3"]
+    build-packages:
+      - build-essential
+      - libgtk-3-dev
+    stage-packages:
+      - libxkbcommon0  # XKB_CONFIG_ROOT
+      - ttf-ubuntu-font-family
+      - dmz-cursor-theme
+      - light-themes
+      - adwaita-icon-theme
+      - gnome-themes-standard
+      - shared-mime-info
+      - libgtk-3-0
+      - libgdk-pixbuf2.0-0
+      - libglib2.0-bin
+      - libgtk-3-bin
+      - unity-gtk3-module
+      - libappindicator3-1
+      - locales-all
+      - xdg-user-dirs
+      - ibus-gtk3
+      - libibus-1.0-5
+      - fcitx-frontend-gtk3
+      - libcanberra-gtk3-module
+
+apps:
+  electron-snap-test:
+    command: bin/desktop-launch $SNAP/bin/electron/snap-test --no-sandbox
+    plugs:
+      - browser-support
+      - desktop
+      - desktop-legacy
+      - gsettings
+      - home
+      - mount-observe
+      - network
+      - network-bind
+      - unity7
+      - x11
+
