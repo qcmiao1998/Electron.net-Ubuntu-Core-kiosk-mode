@@ -7,14 +7,10 @@ base: core20
 grade: stable
 confinement: strict
 
-environment:
-  XWAYLAND_FULLSCREEN_WINDOW_HINT: window_role="browser-window"
-
 parts:
   electron-helloworld:
     plugin: dump
     source: ./SnapTest/bin/Desktop/
-    after: [desktop-gtk3, xwayland-kiosk-helper]
     organize:
       'linux-unpacked/*' : bin/app/
     stage-packages:
@@ -27,54 +23,28 @@ parts:
       - libgbm1
       - libwayland-server0
       - libx11-xcb1
-      - libc6
+      - libc6-dev
       - libgcc1
       - libgssapi-krb5-2
       - libstdc++6
       - zlib1g
       - libssl1.1
       - libicu66
-
-
-  # Adapted from snapcraft-desktop-helpers https://github.com/ubuntu/snapcraft-desktop-helpers/blob/master/snapcraft.yaml#L183
-  desktop-gtk3:
-    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
-    source-subdir: gtk
-    plugin: make
-    make-parameters: ["FLAVOR=gtk3"]
-    build-packages:
-      - build-essential
-      - libgtk-3-dev
-    stage-packages:
-      - libxkbcommon0  # XKB_CONFIG_ROOT
-      - ttf-ubuntu-font-family
-      - dmz-cursor-theme
-      - light-themes
-      - adwaita-icon-theme
-      - gnome-themes-standard
-      - shared-mime-info
+      - libxcomposite1
+      - libxrandr2
+      - libappindicator3-1
       - libgtk-3-0
       - libgdk-pixbuf2.0-0
       - libglib2.0-bin
-      - libgtk-3-bin
-      - unity-gtk3-module
-      - libappindicator3-1
-      - locales-all
-      - xdg-user-dirs
-      - ibus-gtk3
-      - libibus-1.0-5
-      - fcitx-frontend-gtk3
-      - libcanberra-gtk3-module
-
-  xwayland-kiosk-helper:
-    plugin: cmake
-    source: https://github.com/MirServer/xwayland-kiosk-helper.git
-    build-packages: [ build-essential ]
-    stage-packages: [ xwayland, i3, libegl1-mesa, libgl1-mesa-glx ]
+      - libgtk-3-bin 
+      - mesa-utils
+    stage-snaps: [mir-kiosk-x11]
 
 apps:
   electron-snap-test:
-    command: bin/desktop-launch $SNAP/usr/local/bin/xwayland-kiosk-launch $SNAP/bin/app/snap-test --no-sandbox
+    command-chain:
+      - env-setup
+    command: usr/local/bin/x11_kiosk_launch $SNAP/bin/app/snap-test --no-sandbox
     plugs:
       - browser-support
       - desktop
@@ -88,19 +58,14 @@ apps:
       - pulseaudio
       - wayland
 
-  daemon:
-    daemon: simple
-    restart-condition: always
-    command: bin/desktop-launch $SNAP/usr/local/bin/xwayland-kiosk-launch $SNAP/bin/app/snap-test --no-sandbox
-    plugs:
-      - browser-support
-      - desktop
-      - desktop-legacy
-      - gsettings
-      - home
-      - mount-observe
-      - network
-      - network-bind
-      - opengl
-      - pulseaudio
-      - wayland
+layout:
+  /usr/share/X11:
+    bind: $SNAP/usr/share/X11
+  /usr/bin/xkbcomp:
+    symlink: $SNAP/usr/bin/xkbcomp
+  /usr/share/icons:
+    bind: $SNAP/usr/share/icons
+  /usr/share/fonts:
+    bind: $SNAP/usr/share/fonts
+  /etc/fonts:
+    bind: $SNAP/etc/fonts
