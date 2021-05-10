@@ -7,6 +7,14 @@ base: core20
 grade: stable
 confinement: strict
 
+package-repositories:
+  - type: apt
+    formats: [deb]
+    components: [main]
+    suites: [focal]
+    key-id: BC528686B50D79E339D3721CEB3E94ADBE1229CF
+    url: https://packages.microsoft.com/ubuntu/20.04/prod
+
 parts:
   electron-helloworld:
     plugin: dump
@@ -21,9 +29,8 @@ parts:
       - libxtst6
       - libdrm2
       - libgbm1
-      - libwayland-server0
       - libx11-xcb1
-      - libc6-dev
+      - libc6
       - libgcc1
       - libgssapi-krb5-2
       - libstdc++6
