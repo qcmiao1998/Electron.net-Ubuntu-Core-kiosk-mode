@@ -4,15 +4,16 @@ summary: Hello World Electron app
 description: |
   Simple Hello World Electron app as an example
 base: core18
-grade: stable
+grade: devel
 confinement: strict
+compression: lzo
 
 environment:
   XWAYLAND_FULLSCREEN_WINDOW_HINT: window_role="browser-window"
 
 parts:
   electron-helloworld:
-    after: [desktop-gtk3, xwayland-kiosk-helper]
+    after: [ xwayland-kiosk-helper ]
     plugin: dump
     source: ./SnapTest/bin/Desktop/
     organize:
@@ -32,7 +33,7 @@ parts:
       - libstdc++6
       - zlib1g
       - libssl1.1
-#      - libicu66
+      - libicu60
       - libxcomposite1
       - libxrandr2
 # GTK
@@ -55,34 +56,34 @@ parts:
       # - ibus-gtk3
       # - libibus-1.0-5
 
-  desktop-gtk3:
-    build-packages:
-      - build-essential
-      - libgtk-3-dev
-    make-parameters:
-      - FLAVOR=gtk3
-    plugin: make
-    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
-    source-subdir: gtk
-    stage-packages:
-      - libxkbcommon0
-      - ttf-ubuntu-font-family
-      - dmz-cursor-theme
-      - light-themes
-      - adwaita-icon-theme
-      - gnome-themes-standard
-      - shared-mime-info
-      - libgtk-3-0
-      - libgdk-pixbuf2.0-0
-      - libglib2.0-bin
-      - libgtk-3-bin
-      - unity-gtk3-module
-      - libappindicator3-1
-      - locales-all
-      - xdg-user-dirs
-      - ibus-gtk3
-      - libibus-1.0-5
-      - fcitx-frontend-gtk3
+  # desktop-gtk3:
+  #   build-packages:
+  #     - build-essential
+  #     - libgtk-3-dev
+  #   make-parameters:
+  #     - FLAVOR=gtk3
+  #   plugin: make
+  #   source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+  #   source-subdir: gtk
+  #   stage-packages:
+  #     - libxkbcommon0
+  #     - ttf-ubuntu-font-family
+  #     - dmz-cursor-theme
+  #     - light-themes
+  #     - adwaita-icon-theme
+  #     - gnome-themes-standard
+  #     - shared-mime-info
+  #     - libgtk-3-0
+  #     - libgdk-pixbuf2.0-0
+  #     - libglib2.0-bin
+  #     - libgtk-3-bin
+  #     - unity-gtk3-module
+  #     - libappindicator3-1
+  #     - locales-all
+  #     - xdg-user-dirs
+  #     - ibus-gtk3
+  #     - libibus-1.0-5
+  #     - fcitx-frontend-gtk3
 
   xwayland-kiosk-helper:
     plugin: cmake
@@ -94,7 +95,8 @@ apps:
   electron-snap-test:
     daemon: simple
     restart-condition: always
-    command: desktop-launch xwayland-kiosk-launch $SNAP/bin/app/snap-test --no-sandbox
+    extensions: [ gnome-3-28 ]
+    command: snap/command-chain/desktop-launch xwayland-kiosk-launch $SNAP/bin/app/snap-test --no-sandbox
     plugs:
       - browser-support
       - desktop
