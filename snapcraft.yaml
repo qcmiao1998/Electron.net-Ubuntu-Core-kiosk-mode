@@ -3,20 +3,16 @@ version: '0.1'
 summary: Hello World Electron app
 description: |
   Simple Hello World Electron app as an example
-base: core20
+base: core18
 grade: stable
 confinement: strict
 
-package-repositories:
-  - type: apt
-    formats: [deb]
-    components: [main]
-    suites: [focal]
-    key-id: BC528686B50D79E339D3721CEB3E94ADBE1229CF
-    url: https://packages.microsoft.com/ubuntu/20.04/prod
+environment:
+  XWAYLAND_FULLSCREEN_WINDOW_HINT: window_role="browser-window"
 
 parts:
   electron-helloworld:
+    after: [desktop-gtk3, xwayland-kiosk-helper]
     plugin: dump
     source: ./SnapTest/bin/Desktop/
     organize:
@@ -26,32 +22,79 @@ parts:
       - libgconf-2-4
       - libnss3
       - libxss1
+      - libx11-xcb1
       - libxtst6
       - libdrm2
       - libgbm1
-      - libx11-xcb1
       - libc6
       - libgcc1
       - libgssapi-krb5-2
       - libstdc++6
       - zlib1g
       - libssl1.1
-      - libicu66
+#      - libicu66
       - libxcomposite1
       - libxrandr2
-      - libappindicator3-1
+# GTK
+      # - libxkbcommon0  # XKB_CONFIG_ROOT
+      # - libxkbcommon-x11-0
+      # - ttf-ubuntu-font-family
+      # - dmz-cursor-theme
+      # - light-themes
+      # - adwaita-icon-theme
+      # - gnome-themes-standard
+      # - shared-mime-info
+      # - libgtk-3-0
+      # - libgdk-pixbuf2.0-0
+      # - libglib2.0-bin
+      # - libgtk-3-bin
+      # - unity-gtk3-module
+      # - libappindicator3-1
+      # - locales-all
+      # - xdg-user-dirs
+      # - ibus-gtk3
+      # - libibus-1.0-5
+
+  desktop-gtk3:
+    build-packages:
+      - build-essential
+      - libgtk-3-dev
+    make-parameters:
+      - FLAVOR=gtk3
+    plugin: make
+    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    source-subdir: gtk
+    stage-packages:
+      - libxkbcommon0
+      - ttf-ubuntu-font-family
+      - dmz-cursor-theme
+      - light-themes
+      - adwaita-icon-theme
+      - gnome-themes-standard
+      - shared-mime-info
       - libgtk-3-0
       - libgdk-pixbuf2.0-0
       - libglib2.0-bin
-      - libgtk-3-bin 
-      - mesa-utils
-    stage-snaps: [mir-kiosk-x11]
+      - libgtk-3-bin
+      - unity-gtk3-module
+      - libappindicator3-1
+      - locales-all
+      - xdg-user-dirs
+      - ibus-gtk3
+      - libibus-1.0-5
+      - fcitx-frontend-gtk3
+
+  xwayland-kiosk-helper:
+    plugin: cmake
+    source: https://github.com/MirServer/xwayland-kiosk-helper.git
+    build-packages: [ build-essential ]
+    stage-packages: [ xwayland, i3, libegl1-mesa, libgl1-mesa-glx ]
 
 apps:
   electron-snap-test:
-    command-chain:
-      - env-setup
-    command: usr/local/bin/x11_kiosk_launch $SNAP/bin/app/snap-test --no-sandbox
+    daemon: simple
+    restart-condition: always
+    command: desktop-launch xwayland-kiosk-launch $SNAP/bin/app/snap-test --no-sandbox
     plugs:
       - browser-support
       - desktop
@@ -64,15 +107,3 @@ apps:
       - opengl
       - pulseaudio
       - wayland
-
-layout:
-  /usr/share/X11:
-    bind: $SNAP/usr/share/X11
-  /usr/bin/xkbcomp:
-    symlink: $SNAP/usr/bin/xkbcomp
-  /usr/share/icons:
-    bind: $SNAP/usr/share/icons
-  /usr/share/fonts:
-    bind: $SNAP/usr/share/fonts
-  /etc/fonts:
-    bind: $SNAP/etc/fonts
