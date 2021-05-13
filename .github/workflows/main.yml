@@ -41,5 +41,6 @@ jobs:
       - name: Build snap package
         run: |
           sudo snap install snapcraft --classic
+          sudo snap install multipass
           cd $GITHUB_WORKSPACE
           snapcraft
