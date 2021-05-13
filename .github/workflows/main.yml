@@ -38,9 +38,10 @@ jobs:
           cd $GITHUB_WORKSPACE/SnapTest
           electronize build /target linux
       
+      - name: Install Snapcraft
+        uses: samuelmeuli/action-snapcraft@v1
+        
       - name: Build snap package
         run: |
-          sudo snap install snapcraft --classic
-          sudo snap install multipass
           cd $GITHUB_WORKSPACE
           snapcraft
