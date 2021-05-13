@@ -33,13 +33,13 @@ jobs:
         uses: actions/setup-node@v2.1.5
       
       - name: Build .net project
-      - run: |
+        run: |
           dotnet tool install ElectronNET.CLI -g
           cd $GITHUB_WORKSPACE/SnapTest
           electronize build /target linux
       
       - name: Build snap package
-      - run: |
+        run: |
           sudo snap install snapcraft --classic
           cd $GITHUB_WORKSPACE
           snapcraft
