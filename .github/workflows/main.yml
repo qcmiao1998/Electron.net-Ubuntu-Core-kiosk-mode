@@ -38,9 +38,9 @@ jobs:
           cd $GITHUB_WORKSPACE/SnapTest
           electronize build /target linux
       
-      - name: Install Snapcraft
-        uses: samuelmeuli/action-snapcraft@v1
-        
+      - name: Snapcraft Action
+        uses: samuelmeuli/action-snapcraft@v1.2.0
+
       - name: Build snap package
         run: |
           cd $GITHUB_WORKSPACE
