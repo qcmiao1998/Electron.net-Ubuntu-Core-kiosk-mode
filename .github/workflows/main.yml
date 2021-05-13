@@ -5,7 +5,7 @@ name: CI
 # Controls when the action will run. 
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
-  label:
+  push:
     branches: [ master ]
 
   # Allows you to run this workflow manually from the Actions tab
@@ -32,12 +32,14 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@v2.1.5
       
+      - name: Build .net project
       - run: |
           dotnet tool install ElectronNET.CLI -g
           cd $GITHUB_WORKSPACE/SnapTest
           electronize build /target linux
-          
+      
+      - name: Build snap package
       - run: |
-          snap install snapcraft --classic
+          sudo snap install snapcraft --classic
           cd $GITHUB_WORKSPACE
           snapcraft
